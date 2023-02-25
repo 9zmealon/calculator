@@ -4,10 +4,10 @@ import React, {useState} from 'react';
 
 function App() {
 
-  const [screendata,setScreenData] = useState({
-    sign: "",
-    num: 0,
-    res: 0
+  const [screenData,setScreenData] = useState({
+    operator: "",
+    num: "",
+    prevNum: ""
   });
 
   const btnValues = [
@@ -19,32 +19,77 @@ function App() {
   ];
 
 
-
+//Reset or "C" Button
   const resetClickHandler = () =>{
     let reset = {
-          sign: "",
-          num: 0,
-          res: 0};
+          operator: "",
+          num: "",
+          prevNum: ""};
     setScreenData(reset);
   }
   
+//Invert or "+-" button 
   const invertClickHandler = () =>{
-    let reset; 
-    screendata.sign === "" 
-        ? reset = {sign: "-",num: screendata.num,res: 0}          
-        : reset = {sign: "",num: screendata.num,res: 0};
+    let reset = {operator: "",num: 0 - parseFloat(screenData.num),prevNum: ""};
     setScreenData(reset)
   }
-  const numClickHandler = (e) =>{
-    let scrData = {
-      sign: screendata.sign,
-      num:e.target.value,
-      res: 0      
-    }
-    setScreenData(scrData);
-  }
+
+  //Num or "0-9" Button
+  const numClickHandler = (e) =>{    
+    let tempData = {
+      operator: screenData.operator,
+      num:screenData.num+e.target.value,
+      prevNum: parseFloat(screenData.prevNum),      
+    };
+    setScreenData(tempData); 
+  };
+
+  //Operator button
+  const operatorClickHandler = (e) =>{
+    screenData.operator === "" 
+    ? setScreenData({operator: e.target.value,num: "",prevNum: parseFloat(screenData.num)})
+    : equalsClickHandler(e);
+  };
 
 
+  //"=" or equals button 
+  const equalsClickHandler = (e) =>{
+    let equals;
+
+    screenData.operator === "+"
+      ? (equals = parseFloat(screenData.prevNum) + parseFloat(screenData.num))
+      : screenData.operator === "-"
+      ? (equals = parseFloat(screenData.prevNum) - parseFloat(screenData.num))
+      : screenData.operator === "x"
+      ? (equals = parseFloat(screenData.prevNum) * parseFloat(screenData.num))
+      : screenData.operator === "/"
+      ? (equals = parseFloat(screenData.prevNum) / parseFloat(screenData.num))
+      : (equals = parseFloat(screenData.num));
+
+    let tempData = {
+      operator: e.target.value === "=" ? "" : e.target.value,
+      num: equals,      
+      prevNum: ""
+    };
+    setScreenData(tempData);
+  } 
+
+
+  //comma clickHandler for "."
+  const commaClickHandler = (e) => {
+    //convert to array
+    let decimalNum;
+    let numToArr = String(screenData.num)
+      .split("");
+      numToArr.includes(".")
+      ? decimalNum = screenData.num
+      : decimalNum = screenData.num + "."
+      setScreenData({
+        operator:screenData.operator,
+        num: decimalNum,       
+        prevNum:screenData.prevNum
+      });
+  };
 
 
   return (
@@ -69,7 +114,7 @@ function App() {
       {/* //Screen or Display */}
       <div>
           <input 
-            value={screendata.sign+screendata.num}
+            value={screenData.num === "" ? screenData.operator : screenData.num}
           />
       </div>
      
@@ -90,12 +135,12 @@ function App() {
                 ? invertClickHandler
                 // : btn === "%"
                 // ? percentClickHandler
-                // : btn === "="
-                // ? equalsClickHandler
-                // : btn === "/" || btn === "x" || btn === "-" || btn === "+"
-                // ? signClickHandler
-                // : btn === "."
-                // ? commaClickHandler
+                : btn === "="
+                ? equalsClickHandler
+                : btn === "/" || btn === "x" || btn === "-" || btn === "+"
+                ? operatorClickHandler
+                : btn === "."
+                ? commaClickHandler
                 : numClickHandler
               }
               >{btn}</button>
