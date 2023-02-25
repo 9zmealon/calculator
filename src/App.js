@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import React, {useState} from 'react';
 
@@ -10,6 +9,7 @@ function App() {
     prevNum: ""
   });
 
+  //claculator Buttons
   const btnValues = [
     ["C","+-","%","/"],
     [7,8,9,"x"],
@@ -19,7 +19,7 @@ function App() {
   ];
 
 
-//Reset or "C" Button
+  //Reset or "C" Button
   const resetClickHandler = () =>{
     let reset = {
           operator: "",
@@ -36,21 +36,57 @@ function App() {
 
   //Num or "0-9" Button
   const numClickHandler = (e) =>{    
-    let tempData = {
+    // if (screenData.operator!== "" && screenData.num !== "" && screenData.prevNum === "")
+    // {
+    //   let tempvla = {operator: screenData.operator,num: "",prevNum: screenData.num};
+      
+    //   resetClickHandler();
+    //   setScreenData(tempvla);    
+    // }
+    // let tempData = {
+    //   operator: screenData.operator,
+    //   num:screenData.num+e.target.value,
+    //   prevNum: parseFloat(screenData.prevNum),      
+    // };
+    // setScreenData(tempData); 
+    if (screenData.operator!== "" && screenData.num !== "" && screenData.prevNum === "")
+    {
+      let tempvla = {operator: screenData.operator,num: "",prevNum: screenData.num};        
+      
+      let tempData = {
+        operator: tempvla.operator,
+        num:e.target.value,
+        prevNum: tempvla.prevNum,      
+      };
+      setScreenData(tempData);   
+    }
+    else{let tempData = {
       operator: screenData.operator,
       num:screenData.num+e.target.value,
       prevNum: parseFloat(screenData.prevNum),      
     };
-    setScreenData(tempData); 
+    setScreenData(tempData); }
+    
   };
 
   //Operator button
   const operatorClickHandler = (e) =>{
+
     screenData.operator === "" 
     ? setScreenData({operator: e.target.value,num: "",prevNum: parseFloat(screenData.num)})
-    : equalsClickHandler(e);
+    : screenData.operator !== e.target.value && screenData.num === ""
+    ? setScreenData({operator: e.target.value,num: "",prevNum: screenData.prevNum})
+    : screenData.operator !== "" && screenData.prevNum !== "" && screenData.num !== ""
+    ? equalsClickHandler(e)
+    : setScreenData(...setScreenData);
   };
+  
 
+  //percentage Calculation
+  const percentClickHandler = (e) =>{
+    let tempData = {operator: "",num: parseFloat(screenData.num/100),prevNum: parseFloat(screenData.num)};
+    setScreenData(tempData);
+  };
 
   //"=" or equals button 
   const equalsClickHandler = (e) =>{
@@ -68,7 +104,7 @@ function App() {
 
     let tempData = {
       operator: e.target.value === "=" ? "" : e.target.value,
-      num: equals,      
+      num: equals.toString(),      
       prevNum: ""
     };
     setScreenData(tempData);
@@ -97,16 +133,14 @@ function App() {
 
       {/* //Calculator frame */}
       {/* <Wrapper>
-          <Screen>
-            
-          </Screen>
-
-          <ButtonBox>
-            <Button></Button>
-            <Button></Button>
-            <Button></Button>
-            <Button></Button>▐...
-          </ButtonBox>
+            <Screen>
+            </Screen>
+            <ButtonBox>
+              <Button></Button>
+              <Button></Button>
+              <Button></Button>
+              <Button></Button>▐...
+            </ButtonBox>
       </Wrappeer> */}
 
 
@@ -133,11 +167,11 @@ function App() {
                 ? resetClickHandler 
                 : btn === "+-"
                 ? invertClickHandler
-                // : btn === "%"
-                // ? percentClickHandler
+                : btn === "%"
+                ? percentClickHandler
                 : btn === "="
                 ? equalsClickHandler
-                : btn === "/" || btn === "x" || btn === "-" || btn === "+"
+                : btn === "/" || btn === "x" || btn === "-" || btn === "+" 
                 ? operatorClickHandler
                 : btn === "."
                 ? commaClickHandler
@@ -145,12 +179,9 @@ function App() {
               }
               >{btn}</button>
           )
-       })} 
-        
+       })}        
 
       </div>
-
-
     </div>
   );
 }
