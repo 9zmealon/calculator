@@ -146,20 +146,26 @@ function App() {
 
 
       {/* //Screen or Display */}
-      <div>
+      <div className='calculator'>
+      <div className='dispaly-box'>
           <input 
+            type="text"
             value={screenData.num === "" ? screenData.operator : screenData.num}
           />
       </div>
+      </div>
+      
      
-      <br/> 
+      
 
 
       {/* //Button */}
-      <div className='ButtonBox'>
+      
+      <div className='button-box'>
        {btnValues.flat().map((btn,i)=>{
           return(
               <button 
+              className={btn === "=" ? "equal-sign" : btn === "C" ? "all-clear" : ""}
               key={i}
               value={btn}
               onClick={
